@@ -1,19 +1,32 @@
 #include"terminalheader.h"
 #include"cardinfo.h"
 #include"serverheader.h"
+//database for our program to act as a bank server
 struct accountbalance dataBase[] =
         {
-                {"123456789", 100.00},
+                {"123456789", 1000.00},
                 {"234567891",6000.00},
-                {"567891234",3250.25},
-                {"456789123",1500.12},
-                {"258649173",500.00},
-                {"654823719",2100.00},
-                {"971362485",0.00},
-                {"793148625",1.00 },
-                {"123123456", 10.12},
+                {"567891234",340.25},
+                {"456789123",1600.12},
+                {"258649173",540.00},
+                {"654823719",200.00},
+                {"971362485",0.0},
+                {"793148625",123.00 },
+                {"123123456", 1033.12},
                 {"456789321", 0.55},
         };
+//talking the card data
+void dataoncard (struct carddata *owner) {
+    printf("\tPlease enter card data\n\n\n\n");
+    printf("Please enter card holder name:\n\n");
+    scanf("%[^\n]%*c" , owner ->ownername) ;
+    printf("Please enter your card num [PAN] : \n\n") ;
+    scanf("%s" , owner ->cardPAN ) ;
+    printf("Please enter the expiration date \t\t (MM/YY) : \n\n") ;
+    scanf("%s" , owner ->expirationdate) ;
+ }
+ //preform the process and make sure that card is not expired
+ //talking the amount of money in this transaction and compare it to the maximum
 unsigned char terminal(struct carddata *c, struct terminal_data *t) {
       printf("\n\t\tPlease enter terminal data\n\n");
     printf("Please Enter the transaction Amount:\n");
@@ -39,7 +52,7 @@ unsigned char terminal(struct carddata *c, struct terminal_data *t) {
         }
     }
 }
-
+// function check the card expiration
 int dateofcardcheck(unsigned char expirationdate[10] , unsigned char transactionDate[11])
 {
     unsigned char *tmptr = &transactionDate[4] ;
@@ -60,15 +73,7 @@ int dateofcardcheck(unsigned char expirationdate[10] , unsigned char transaction
     }
     else return 1 ;
 }
- void dataoncard (struct carddata *owner) {
-    printf("\tPlease enter card data\n\n\n\n");
-    printf("Please enter card holder name:\n\n");
-    scanf("%[^\n]%*c" , owner ->ownername) ;
-    printf("Please enter your card num [PAN] : \n\n") ;
-    scanf("%s" , owner ->cardPAN ) ;
-    printf("Please enter the expiration date \t\t (MM/YY) : \n\n") ;
-    scanf("%s" , owner ->expirationdate) ;
- }
+// searching for the account of the user in server and preform the process
 int  server (struct accountbalance *database , struct carddata *card , struct terminal_data *ter)
 {
     int found = SERCHINGFORCARD(database , 8 , card ->cardPAN ) ;
