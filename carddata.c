@@ -1,4 +1,8 @@
 #include"cardinfo.h"
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include <stdlib.h>
  void dataoncard (struct carddata *owner) {
      printf("Please enter card data\n\n\n\n");
     printf("Please enter card holder name:\n\n");
@@ -6,5 +10,5 @@
     printf("Please enter your card num [PAN] : \n\n") ;
     scanf("%s" , owner ->cardPAN ) ;
     printf("Please enter the expiration date \t\t (MM/YY) : \n\n") ;
-    scanf("%s" , owner ->expirationdate) ;
+    scanf("%s" , owner -> expirationdate) ;
  }
