@@ -5,9 +5,14 @@
 #include <math.h>
 #include <stdlib.h>
 unsigned char terminal(struct carddata *c, struct terminal_data *t) {
-    printf("\n\t\tPlease enter terminal data\n\n");
+      printf("\n\t\tPlease enter terminal data\n\n");
+      printf ("1 for purchase \n");
+      printf( "2 for refund ") ;
+      int ans ;
+     scanf("%d" ,&ans) ;
+     if (ans == 1) {
     printf("Please Enter the transaction Amount:\n");
-    scanf("%lf", &t->transAmount);
+        scanf("%lf", &t->transAmount);
     if (t->transAmount > t->maxTransAmount) {
         printf("The Transaction is not approved \n");
         printf("Error: Transaction Amount > Maximum Transaction Amount\n\n");
@@ -16,7 +21,7 @@ unsigned char terminal(struct carddata *c, struct terminal_data *t) {
     {
          printf("Please Enter transaction Date:\t\t (DD/MM/YYYY)\n");
        scanf ("%s" , t->transactionDate);
-        int check = dateofcardcheck( c -> expirationdate , t->transactionDate) ;
+        int check = dateofcardcheck(c ->  expirationdate , t->transactionDate) ;
         if (check == 0)
         {
             printf("The Transaction is not approved \n");
@@ -25,8 +30,34 @@ unsigned char terminal(struct carddata *c, struct terminal_data *t) {
         }
         else
         {
-            return 1 ;
+           return 1 ;
         }
+    }
+     }
+
+    else if (ans == 2){
+        printf("please enter refunded amount:\n");
+        scanf("lf" , &t->refundedamount ) ;
+        if (t->refundedamount > t->maxTransAmount) {
+        printf("The Transaction is not approved \n");
+        printf("Error : refunded Amount > Maximum Transaction Amount\n\n");
+    }
+    else
+    {
+         printf("Please Enter transaction Date:\t\t (DD/MM/YYYY)\n");
+       scanf ("%s" , t->transactionDate);
+        int check = dateofcardcheck(c ->  expirationdate , t->transactionDate) ;
+        if (check == 0)
+        {
+            printf("The Transaction is not approved \n");
+            printf("The card is expired \n\n ");
+            return 0 ;
+        }
+        else
+        {
+           return 1 ;
+        }
+    }
     }
     }
 

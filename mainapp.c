@@ -1,9 +1,23 @@
 #include"terminalheader.h"
 #include"cardinfo.h"
+#include"serverheader.h"
+struct accountbalance dataBase[] =
+        {
+                {"123456789", 100.00},
+                {"234567891",6000.00},
+                {"567891234",3250.25},
+                {"456789123",1500.12},
+                {"258649173",500.00},
+                {"654823719",2100.00},
+                {"971362485",0.00},
+                {"793148625",1.00 },
+                {"123123456", 10.12},
+                {"456789321", 0.55},
+        };
 unsigned char terminal(struct carddata *c, struct terminal_data *t) {
-    printf("\n\t\tPlease enter terminal data\n\n");
+      printf("\n\t\tPlease enter terminal data\n\n");
     printf("Please Enter the transaction Amount:\n");
-    scanf("%lf", &t->transAmount);
+        scanf("%lf", &t->transAmount);
     if (t->transAmount > t->maxTransAmount) {
         printf("The Transaction is not approved \n");
         printf("Error: Transaction Amount > Maximum Transaction Amount\n\n");
@@ -21,10 +35,10 @@ unsigned char terminal(struct carddata *c, struct terminal_data *t) {
         }
         else
         {
-            return 1 ;
+           return 1 ;
         }
     }
-    }
+}
 
 int dateofcardcheck(unsigned char expirationdate[10] , unsigned char transactionDate[11])
 {
@@ -55,14 +69,57 @@ int dateofcardcheck(unsigned char expirationdate[10] , unsigned char transaction
     printf("Please enter the expiration date \t\t (MM/YY) : \n\n") ;
     scanf("%s" , owner ->expirationdate) ;
  }
+int  server (struct accountbalance *database , struct carddata *card , struct terminal_data *ter)
+{
+    int found = SERCHINGFORCARD(database , 8 , card ->cardPAN ) ;
+    if (found == -1)
+    {
+       printf("Account did not found \n") ;
+       return 0 ;
+    }
+    else
+    {
+        if (database[found].cardbalance >= ter->transAmount)
+        {
+            printf ("1 for purchase \n");
+            printf( "2 for refund \n ") ;
+             int ans ;
+            scanf("%d" ,&ans) ;
+            if (ans ==1) {
+            printf("processed successfully\n" ) ;
+           database[found].cardbalance = (database[found].cardbalance) - (ter ->transAmount) ;
+            printf("Your account balance is now %lf" , &database[found].cardbalance) ;
+            }
+            else if (ans == 2)
+            {
+                  printf("processed successfully\n" ) ;
+           database[found].cardbalance = (database[found].cardbalance) + (ter ->transAmount) ;
+            printf("Your account balance is now %lf" , &database[found].cardbalance) ;
+            }
 
+        }
+    }
+}
+int SERCHINGFORCARD (struct accountbalance *database , int size , unsigned char *cardPAN[20])
+{
+  for (int i = 0 ; i < size ; i++)
+  {
+      if (strcmp((char *) database[i].cardnumber ,(char *) cardPAN)== 0)
+      {
+          return i ;
+      }
+      else
+        return -1 ;
+  }
+}
 int main ()
 {
 printf("\t\tWelcome\n\n");
 struct carddata c = {"", "", ""};
-struct terminal_data t = {0.0, 6000.0, ""};
+struct terminal_data t = {0.0, 10000.0,0.0, ""};
 struct carddata *cptr = &c;
 struct terminal_data *tptr = &t;
 dataoncard(cptr) ;
 int res = terminal(cptr , tptr) ;
+server(dataBase , cptr , tptr) ;
 }
