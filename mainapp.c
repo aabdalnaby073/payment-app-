@@ -2,61 +2,150 @@
 #include"cardinfo.h"
 #include"serverheader.h"
 //database for our program to act as a bank server
-struct accountbalance dataBase[] =
+struct accountinfo dataBase[] =
         {
-                {"123456789", 1000.00},
-                {"234567891",6000.00},
-                {"567891234",340.25},
-                {"456789123",1600.12},
-                {"258649173",540.00},
-                {"654823719",200.00},
-                {"971362485",0.0},
-                {"793148625",123.00 },
-                {"123123456", 1033.12},
-                {"456789321", 0.55},
-        };
-//talking the card data
-void dataoncard (struct carddata *owner) {
-    printf("\tPlease enter card data\n\n\n\n");
-    printf("Please enter card holder name:\n\n");
-    scanf("%[^\n]%*c" , owner ->ownername) ;
-    printf("Please enter your card num [PAN] : \n\n") ;
-    scanf("%s" , owner ->cardPAN ) ;
-    printf("Please enter the expiration date \t\t (MM/YY) : \n\n") ;
-    scanf("%s" , owner ->expirationdate) ;
+                {"12345678912345678", 1000.00},
+                {"234567891028745340",6000.00},
+                {"567891234458987976",340.25},
+                {"45678912343856556",1600.12},
+                {"25864917347344643",540.00},
+                {"65482371912431213",200.00},
+                {"971362485847632113",0.0},
+                {"793148625725131311",123.00 },
+                {"123123456000000000", 1033.12},
+                {"45678932133333333", 0.55},
+};
+// here we develop function to take a name on card from user and validate it
+void getCardHolderName(struct carddata *owner)
+ {
+   printf("Please enter card holder name:\n\n");
+   unsigned char name[30] ;
+    scanf("%[^\n]%*c" , name) ;
+    int strlenght = strlen(name) ;
+    if (strlenght > 24 || strlenght == 0 || strlenght<20){
+        printf("WRONG_Name\n close program and try again \n") ;
+    }
+    else {
+        printf("OK\n") ;
+          for (int i = 0 ; i < strlenght ; i++)
+          {
+              owner->ownername[i] = name[i] ;
+          }
+    }
  }
- //preform the process and make sure that card is not expired
- //talking the amount of money in this transaction and compare it to the maximum
-unsigned char terminal(struct carddata *c, struct terminal_data *t) {
-      printf("\n\t\tPlease enter terminal data\n\n");
-    printf("Please Enter the transaction Amount:\n");
-        scanf("%lf", &t->transAmount);
-    if (t->transAmount > t->maxTransAmount) {
-        printf("The Transaction is not approved \n");
-        printf("Error: Transaction Amount > Maximum Transaction Amount\n\n");
+  //accepted test case
+ //ahmed mohamed abdalnaby
+ // wrong test case ahmed
+//***************************************************************************************************************************************************************************
+ // here we develop function to take a name on card from user and validate it
+
+ void getCardExpiryDate(struct carddata *owner)
+ {
+   printf("Please enter expiration date as MM/YY:\n\n");
+   unsigned char date[8] ;
+    scanf("%s" , date) ;
+    int strlenght = strlen(date) ;
+    if (strlenght !=5){
+        printf("WRONG_date\n close program and try again \n") ;
+       return 0 ;
+    }
+    else {
+        printf("OK") ;
+          for (int i = 0 ; i < strlenght ; i++)
+          {
+              owner->expirationdate[i] = date[i] ;
+              printf("\n") ;
+          }
+    }
+ }
+ //accepted test case
+ //02/22
+ // wrong test case
+ // 2/22
+//***********************************************************************************************************************************************************************************
+ void getCardPAN(struct carddata *owner)
+ {
+   printf("Please enter PAN:\n\n");
+   unsigned char PAN[20] ;
+    scanf("%s" , PAN) ;
+    int strlenght = strlen(PAN) ;
+    if (strlenght > 19 || strlenght == 0 || strlenght <16){
+        printf("WRONG_PAN\n close program and try again \n") ;
+    }
+    else {
+        printf("OK") ;
+          for (int i = 0 ; i < strlenght ; i++)
+          {
+              owner->cardPAN[i] = PAN[i] ;
+              printf("\n") ;
+          }
+    }
+ }
+ //accepted test case
+ //12345678911223344
+ //wrong test case
+ //12345
+// mother function to take all transaction data an validate it
+//all test cases were illustrated in the videos
+    int gettransactiondata(struct terminal_data *terminal , struct carddata *card)
+    {
+    printf("Please Enter transaction Date:\t\t (DD/MM/YYYY)\n");
+      unsigned char date[12] ;
+    scanf("%s" , date) ;
+    int strlenght = strlen(date) ;
+    if (strlenght != 10)
+    {
+    printf("WRONG_date\n") ;
+    return 0 ;
     }
     else
     {
-         printf("Please Enter transaction Date:\t\t (DD/MM/YYYY)\n");
-       scanf ("%s" , t->transactionDate);
-        int check = dateofcardcheck(c ->  expirationdate , t->transactionDate) ;
-        if (check == 0)
+        printf("OK") ;
+          for (int i = 0 ; i < strlenght ; i++)
+          {
+              terminal->transactionDate[i] = date[i] ;
+              printf("\n") ;
+          }
+    }
+    int ans = dateofcardcheck(card->expirationdate, terminal ->transactionDate) ;
+    if (ans == 0)
+    {
+        printf("the card is expired\n restart the program \n") ;
+        return 0 ;
+    }
+    else
+    {
+        printf("please enter max transamount \n") ;
+        scanf("%lf", &terminal ->maxTransAmount);
+        if (terminal->maxTransAmount <0)
         {
-            printf("The Transaction is not approved \n");
-            printf("The card is expired \n\n ");
+            printf("wrong \n" ) ;
             return 0 ;
         }
-        else
+        else {
+          printf("Please Enter the transaction Amount:\n");
+        scanf("%lf", &terminal ->transAmount);
+        if (terminal->transAmount < 0)
         {
-           return 1 ;
+            printf("wrong transaction \n") ;
+            return 0 ;
         }
+       else
+       {
+
+            if (terminal->transAmount > terminal->maxTransAmount) {
+        printf("The Transaction is not approved \n");
+        printf("Error: Transaction Amount > Maximum Transaction Amount\n\n");
+        return 0 ;
+       }
     }
-}
-// function check the card expiration
+    }
+    }
+    }
 int dateofcardcheck(unsigned char expirationdate[10] , unsigned char transactionDate[11])
 {
     unsigned char *tmptr = &transactionDate[4] ;
-    unsigned char *typtr = &transactionDate[7] ;
+    unsigned char *typtr = &transactionDate[9] ;
     unsigned char *cmptr = &expirationdate[1] ;
     unsigned char *cyptr = &expirationdate[4] ;
     int mint = atoi(tmptr) ;
@@ -71,45 +160,38 @@ int dateofcardcheck(unsigned char expirationdate[10] , unsigned char transaction
     {
         return 0 ;
     }
-    else return 1 ;
-}
-// searching for the account of the user in server and preform the process
-int  server (struct accountbalance *database , struct carddata *card , struct terminal_data *ter)
-{
-    int found = SERCHINGFORCARD(database , 8 , card ->cardPAN ) ;
-    if (found == -1)
-    {
-       printf("Account did not found \n") ;
-       return 0 ;
-    }
     else
-    {
-        if (database[found].cardbalance >= ter->transAmount)
-        {
-            printf ("1 for purchase \n");
-            printf( "2 for refund \n ") ;
-             int ans ;
-            scanf("%d" ,&ans) ;
-            if (ans ==1) {
-            printf("processed successfully\n" ) ;
-           database[found].cardbalance = (database[found].cardbalance) - (ter ->transAmount) ;
-            printf("Your account balance is now %lf" , &database[found].cardbalance) ;
-            }
-            else if (ans == 2)
-            {
-                  printf("processed successfully\n" ) ;
-           database[found].cardbalance = (database[found].cardbalance) + (ter ->transAmount) ;
-            printf("Your account balance is now %lf" , &database[found].cardbalance) ;
-            }
-
-        }
-    }
+    return 1 ;
 }
-int SERCHINGFORCARD (struct accountbalance *database , int size , unsigned char *cardPAN[20])
+int  server (struct accountinfo *database , struct carddata *card , struct terminal_data *ter)
+{
+        int found = SERCHINGFORCARD(database , 8 , card ->cardPAN) ;
+        if (found == -1 )
+        {
+          printf("DECLINED_STOLEN_CARD\n") ;
+            return 0 ;
+        }
+        else
+        {
+
+          if (database[found].balance >= ter->transAmount)
+        {
+           printf("APPROVED\n") ;
+           database[found].balance = database[found].balance - ter->transAmount ;
+           printf("Saved \n your balance now is %f" ,database[found].balance) ;
+        }
+        else
+        {
+            printf("LOW_BALANCE") ;
+        }
+
+}
+}
+int SERCHINGFORCARD (struct accountinfo *database , int size , unsigned char *cardPAN[20])
 {
   for (int i = 0 ; i < size ; i++)
   {
-      if (strcmp((char *) database[i].cardnumber ,(char *) cardPAN)== 0)
+      if (strcmp((char *) database[i].primaryAccountNumber,(char *) cardPAN)== 0)
       {
           return i ;
       }
@@ -117,14 +199,16 @@ int SERCHINGFORCARD (struct accountbalance *database , int size , unsigned char 
         return -1 ;
   }
 }
-int main ()
+int main()
 {
-printf("\t\tWelcome\n\n");
-struct carddata c = {"", "", ""};
-struct terminal_data t = {0.0, 10000.0,0.0, ""};
-struct carddata *cptr = &c;
-struct terminal_data *tptr = &t;
-dataoncard(cptr) ;
-int res = terminal(cptr , tptr) ;
-server(dataBase , cptr , tptr) ;
+    struct carddata c = {"", "", ""};
+    struct terminal_data t = {0.0, 6000.0, ""};
+    struct terminal_data *tptr = &t;
+    struct carddata *cptr = &c;
+    getCardHolderName(cptr) ;
+    getCardExpiryDate(cptr) ;
+    getCardPAN(cptr) ;
+    gettransactiondata(tptr ,cptr) ;
+    server(dataBase , cptr , tptr) ;
 }
+
