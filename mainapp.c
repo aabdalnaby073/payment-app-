@@ -15,6 +15,13 @@ struct accountinfo dataBase[] =
                 {"123123456000000000", 1033.12},
                 {"45678932133333333", 0.55},
 };
+// data base of cards that was stolen and reported by owners
+struct blockedaccounts database2[] =
+{
+
+    {"123123456000000000"},
+    {"25864917347344643"},
+};
 // here we develop function to take a name on card from user and validate it
 void getCardHolderName(struct carddata *owner)
  {
@@ -165,15 +172,20 @@ int dateofcardcheck(unsigned char expirationdate[10] , unsigned char transaction
 }
 int  server (struct accountinfo *database , struct carddata *card , struct terminal_data *ter)
 {
-        int found = SERCHINGFORCARD(database , 8 , card ->cardPAN) ;
-        if (found == -1 )
+        int found = SERCHINGFORCARD(database , 10 , card ->cardPAN) ;
+        int blocked = searchblockedaccounts(database2 , 2 , card ->cardPAN) ;
+        if (found == (255))
         {
-          printf("DECLINED_STOLEN_CARD\n") ;
+          printf("DECLINED_CARD_NOT_FOUND\n") ;
             return 0 ;
         }
         else
         {
-
+         if (blocked != -1 )
+         {
+             printf("DECLINED_STOLEN_CARD\n") ;
+         }
+         else {
           if (database[found].balance >= ter->transAmount)
         {
            printf("APPROVED\n") ;
@@ -184,7 +196,7 @@ int  server (struct accountinfo *database , struct carddata *card , struct termi
         {
             printf("LOW_BALANCE") ;
         }
-
+         }
 }
 }
 int SERCHINGFORCARD (struct accountinfo *database , int size , unsigned char *cardPAN[20])
@@ -195,10 +207,22 @@ int SERCHINGFORCARD (struct accountinfo *database , int size , unsigned char *ca
       {
           return i ;
       }
-      else
-        return -1 ;
   }
+    return -1 ;
 }
+int searchblockedaccounts (struct blockedaccounts *database2 , int size , unsigned char *cardPAN[20])
+{
+      for (int i = 0 ; i < size ; i++)
+  {
+      if (strcmp((char *) database2[i].primaryAccountNumber,(char *) cardPAN)== 0)
+      {
+          return i ;
+      }
+
+  }
+  return -1 ;
+}
+
 int main()
 {
     struct carddata c = {"", "", ""};
